@@ -1,6 +1,6 @@
 <template>
   <div class="item">
-    <i>
+    <!-- <i>
       <slot name="icon"></slot>
     </i>
     <div class="details">
@@ -8,7 +8,7 @@
         <slot name="heading"></slot>
       </h3>
       <slot></slot>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -17,12 +17,12 @@
   margin-top: 2rem;
   display: flex;
   position: relative;
-   
-  @media (min-width: 1024pc) {
+  border: 3px solid blue;
+
+  @media (min-width: 1024px) {
     margin-top: 0;
     border: 2px solid red;
     padding: 0.4rem 0 1rem calc(var(--section-gap) / 2);
-
 
     &:before {
       content: ' ';
@@ -84,5 +84,4 @@
     }
   }
 }
-
 </style>
