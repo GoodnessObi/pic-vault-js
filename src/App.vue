@@ -1,34 +1,34 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import PageHeader from './components/PageHeader.vue'
-import { ref, onMounted } from 'vue'
-import { fetchPhotos, type UnsplashPhoto } from './services/api'
+import { useSearchImages } from '@/composables/useSearchImages'
 
 const searchQuery = ref('nature')
-const photos = ref<UnsplashPhoto[]>([])
-const selectedPhoto = ref<UnsplashPhoto | null>(null)
 
-// Fetch images from Unsplash
-const fetchImages = async () => {
-  try {
-    photos.value = await fetchPhotos(searchQuery.value)
-  } catch (error) {
-    console.error('Error fetching images:', error)
-  }
-}
+const { pictures, loading, error, searchImages } = useSearchImages()
 
-onMounted(fetchImages)
+onMounted(() => {
+  searchImages(searchQuery.value)
+})
 
-console.log(photos)
+watch(
+  searchQuery,
+  (newQuery) => {
+    const query = newQuery.trim() === '' ? 'nature' : newQuery
+    searchImages(query)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <main>
-    <PageHeader />
+    <PageHeader @update:search="searchQuery = $event" />
 
-    <RouterView class="" v-slot="{ Component }">
+    <RouterView v-slot="{ Component }">
       <Transition name="page" mode="out-in">
-        <component :is="Component" :photos="photos" />
+        <component :is="Component" :photos="pictures" :isLoading="loading" />
       </Transition>
     </RouterView>
   </main>
@@ -40,5 +40,6 @@ main {
   position: relative;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 40px;
 }
 </style>

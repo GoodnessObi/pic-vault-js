@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import IconSearch from './icons/IconSearch.vue'
-// import { ref } from "vue";
 
-// defineProps<{ msg: string }>();
+const emit = defineEmits(['update:search'])
 
-// const count = ref(0);
+const searchInput = ref('')
+
+let timeout: ReturnType<typeof setTimeout>
+
+const handleSearch = () => {
+  clearTimeout(timeout)
+  timeout = setTimeout(() => {
+    emit('update:search', searchInput.value.trim())
+  }, 5000)
+}
 </script>
 
 <template>
@@ -13,7 +22,12 @@ import IconSearch from './icons/IconSearch.vue'
       <span>
         <IconSearch />
       </span>
-      <input placeholder="Search for photo..." />
+      <input
+        v-model="searchInput"
+        placeholder="Search for photo..."
+        @input="handleSearch"
+        @keyup.enter="emit('update:search', searchInput.trim())"
+      />
     </div>
   </div>
 </template>
@@ -43,6 +57,7 @@ import IconSearch from './icons/IconSearch.vue'
       border: none;
       outline: none;
       color: #2d3849;
+      width: 100%;
     }
   }
 }

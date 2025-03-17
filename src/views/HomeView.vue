@@ -1,17 +1,44 @@
 <script setup lang="ts">
-import type { UnsplashPhoto } from '@/services/api'
+import { ref, computed } from 'vue'
+import GridLoadingSkeleton from '@/components/GridLoadingSkeleton.vue'
+import type { UnsplashPhoto } from '@/composables/useSearchImages'
 
-defineProps<{ photos: UnsplashPhoto[] }>()
+const props = defineProps<{ photos: UnsplashPhoto[]; isLoading: boolean }>()
+
+const photos = computed(() => props.photos)
+const isLoading = computed(() => props.isLoading)
+
+// Track which images have finished loading
+const loadedImages = ref<{ [key: string]: boolean }>({})
+
+const markImageAsLoaded = (id: string) => {
+  loadedImages.value[id] = true
+}
 </script>
 
 <template>
-  <div class="page">
-    <div v-for="photo in photos" :key="photo.id" class="grid-item">
-      <img :src="photo.urls.small" :alt="photo.alt_description" />
-      <div class="overlay">
-        <div class="photo-info">
+  <GridLoadingSkeleton v-if="isLoading" />
+
+  <div v-else class="grid">
+    <div
+      v-for="photo in photos"
+      :key="photo.id"
+      class="grid_card"
+      :style="{
+        backgroundColor: photo.color,
+        minHeight: loadedImages[photo.id] ? 'fit-content' : '200px',
+      }"
+    >
+      <img
+        :src="photo.optimizedUrl"
+        :alt="photo.alt_description"
+        :class="{ hidden: !loadedImages[photo.id] }"
+        @load="markImageAsLoaded(photo.id)"
+      />
+      <div class="grid_card-overlay">
+        <div class="grid_card-info">
           <p>{{ photo.user.name }}</p>
-          <p>{{ photo.location?.name || 'Unknown location' }}</p>
+          <p>{{ photo.user.location || 'Unknown location' }}</p>
         </div>
       </div>
     </div>
@@ -19,49 +46,52 @@ defineProps<{ photos: UnsplashPhoto[] }>()
 </template>
 
 <style lang="scss" scoped>
-.page {
+.grid {
   position: absolute;
-  border: 1px solid red;
-  width: 90%;
+  width: 80%;
   max-width: 1000px;
   margin: 0 auto;
   top: 250px;
   min-height: 50vh;
-  -moz-column-count: 1;
-  -webkit-column-count: 1;
   column-count: 1;
   column-gap: 20px;
   page-break-inside: avoid;
   break-inside: avoid-column;
 
   @media (min-width: 495px) {
-    -moz-column-count: 2;
-    -webkit-column-count: 2;
     column-count: 2;
   }
 
   @media (min-width: 795px) {
-    -moz-column-count: 3;
-    -webkit-column-count: 3;
     column-count: 3;
   }
 
-  .grid-item {
+  &_card {
     width: 100%;
     position: relative;
     overflow: hidden;
-    min-height: fit-content;
     margin-bottom: 20px;
     break-inside: avoid-column;
     border-radius: 8px;
     cursor: pointer;
+    transition: background 0.3s ease-in-out;
+
+    /* Use the base color as a placeholder */
+    background-color: #ddd;
 
     img {
+      display: block;
       width: 100%;
       height: auto;
+      transition: opacity 0.3s ease-in-out;
     }
 
-    .overlay {
+    /* Hide images until they are loaded */
+    img.hidden {
+      opacity: 0;
+    }
+
+    &-overlay {
       position: absolute;
       top: 0;
       left: 0;
@@ -71,20 +101,21 @@ defineProps<{ photos: UnsplashPhoto[] }>()
       padding: 16px;
       display: flex;
       flex-direction: column;
+      transition: background 0.3s ease-in-out;
+    }
 
-      .photo-info {
-        margin-top: auto;
-        color: white;
-      }
+    &-info {
+      margin-top: auto;
+      color: white;
     }
 
     &:hover {
-      .overlay {
+      .grid_card-overlay {
         background-color: rgba(255, 255, 255, 0.5);
+      }
 
-        .photo-info {
-          color: black;
-        }
+      .grid_card-info {
+        color: black;
       }
     }
   }

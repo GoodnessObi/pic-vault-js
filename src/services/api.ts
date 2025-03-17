@@ -6,16 +6,21 @@ const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY
 export interface UnsplashPhoto {
   id: string
   alt_description: string
+  width: number
+  height: number
+  color: string
+  blur_hash: string
   urls: {
+    raw: string
+    thumb: string
     small: string
     regular: string
     full: string
+    small_s3: string
   }
   user: {
     name: string
-  }
-  location?: {
-    name?: string
+    location: string
   }
 }
 
