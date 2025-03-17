@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSearch from './icons/IconSearch.vue'
 // import { ref } from "vue";
 
 // defineProps<{ msg: string }>();
@@ -9,6 +10,9 @@
 <template>
   <div class="hero">
     <div class="hero_search">
+      <span>
+        <IconSearch />
+      </span>
       <input placeholder="Search for photo..." />
     </div>
   </div>
@@ -18,22 +22,27 @@
 .hero {
   width: 100%;
   height: 300px;
-  background-color: #dce3cb;
+  background-color: #dce3eb;
   display: grid;
   place-items: center;
 
   &_search {
-    width: 100%;
+    width: 80%;
     display: flex;
-    justify-content: center;
     align-items: center;
+    background-color: white;
+    border-radius: 8px;
+
+    span {
+      padding: 12px;
+      padding-right: 0;
+    }
 
     input {
-      width: 50%;
       padding: 10px;
       border: none;
-      border-radius: 5px;
       outline: none;
+      color: #2d3849;
     }
   }
 }
