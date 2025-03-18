@@ -33,7 +33,7 @@ export function useSearchImages() {
   const error = ref<string | null>(null)
   const networkSpeed = ref<number>(4)
 
-  const searchImages = async (query = 'nature', perPage = 8) => {
+  const searchImages = async (query = 'african', perPage = 8) => {
     loading.value = true
     error.value = null
 
