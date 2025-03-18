@@ -1,5 +1,4 @@
 <template>
-  <!-- <div > -->
   <transition-group name="fade" tag="div" class="boxes-con">
     <div v-for="index in 6" :key="index" class="boxes">
       <div class="box-info">
@@ -8,7 +7,6 @@
       </div>
     </div>
   </transition-group>
-  <!-- </div> -->
 </template>
 
 <style lang="scss" scoped>
@@ -33,11 +31,13 @@
   padding: 10px;
   display: flex;
   grid-row: auto / span 1;
-  background: #f6f6f6;
+  background: linear-gradient(100deg, #f6f6f6, #dce3eb, #f6f6f6);
+  background-size: 300% 100%;
   border-radius: 5px;
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in-out forwards;
+  animation:
+    colorFlow 2s infinite linear,
+    fadeIn 0.5s ease-in-out forwards;
 }
 
 .boxes:nth-child(odd) {
@@ -77,6 +77,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Flowing color animation */
+@keyframes colorFlow {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 

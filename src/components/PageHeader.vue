@@ -20,7 +20,7 @@ const handleSearch = () => {
   clearTimeout(timeout)
   timeout = setTimeout(() => {
     updateSearchQuery(searchInput.value.trim())
-  }, 5000)
+  }, 2000)
 }
 
 const updateSearchQuery = (query: string) => {
@@ -47,6 +47,7 @@ watch(
         <input
           v-model="searchInput"
           placeholder="Search for photo..."
+          type="search"
           :disabled="searchState?.isLoading.value"
           @input="handleSearch"
           @keyup.enter="updateSearchQuery(searchInput.trim())"
