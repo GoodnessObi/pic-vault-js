@@ -31,7 +31,6 @@ watch(pictures, () => {
 provide(SearchStateKey, { isLoading, isSuccess })
 
 onMounted(() => {
-  console.log(searchQuery.value)
   searchImages(searchQuery.value)
 })
 

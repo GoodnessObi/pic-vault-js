@@ -23,7 +23,6 @@ const testNetworkSpeed = async (): Promise<number> => {
     }
 
     if (effectiveType) {
-      console.log(`Using effectiveType: ${effectiveType}`)
       switch (effectiveType) {
         case 'slow-2g':
           return 0.5

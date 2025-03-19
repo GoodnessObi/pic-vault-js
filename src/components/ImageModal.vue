@@ -18,17 +18,12 @@ const touchEndX = ref(0)
 
 const placeholderImage = computed(() => {
   const photo = props.photos[currentIndex.value]
-
-  console.log('Photo:', photo.blur_hash) // Debugging
   if (!photo?.blur_hash) return ''
 
   const aspectRatio = photo.width / photo.height
-
-  console.log(aspectRatio)
   const width = 32
   const height = Math.round(width / aspectRatio)
 
-  console.log(blurHashToDataURL(photo.blur_hash, width, height))
   return blurHashToDataURL(photo.blur_hash, width, height)
 })
 
@@ -36,7 +31,6 @@ const placeholderAspectRatio = computed(() => {
   const photo = props.photos[currentIndex.value]
   if (!photo) return '1 / 1'
 
-  console.log(`${photo.width} / ${photo.height}`)
   return `${photo.width} / ${photo.height}`
 })
 
