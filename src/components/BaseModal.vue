@@ -64,7 +64,7 @@ watch(
   background: transparent;
   border-radius: 8px;
   max-width: 768px;
-  width: 90%;
+  width: 100%;
   height: 80vh;
   max-height: 798px;
   text-align: center;

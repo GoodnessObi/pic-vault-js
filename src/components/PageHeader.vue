@@ -3,7 +3,7 @@ import { inject, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import IconSearch from './icons/IconSearch.vue'
 import { SearchStateKey, type SearchState } from '@/types'
-import IconLeftArrow from './icons/IconLeftArrow.vue'
+import IconArrowLeft from './icons/IconArrowLeft.vue'
 
 const emit = defineEmits(['update:search'])
 const searchState = inject<SearchState>(SearchStateKey)
@@ -20,6 +20,12 @@ const updateSearchQuery = (query: string) => {
   router.push({ query: query ? { search: query } : {} })
 }
 
+// Clear search query and reset input
+const clearSearch = () => {
+  searchInput.value = '' // Clear the input field
+  updateSearchQuery('') // Clear the search query in the route
+}
+
 watch(
   () => route.query.search,
   (newQuery) => {
@@ -31,19 +37,23 @@ watch(
 <template>
   <div class="hero">
     <div class="hero_container">
-      <p class="hero_searchState" v-if="!!searchQuery && searchState?.isLoading.value">
-        Searching for <span>"{{ searchQuery }}"</span>
-      </p>
+      <div class="hero_searchState" v-if="!!searchQuery && searchState?.isLoading.value">
+        <p>
+          Searching for <span>"{{ searchQuery }}"</span>
+        </p>
+      </div>
 
-      <p
+      <div
         class="hero_searchState"
         v-else-if="!!searchQuery && !searchState?.isLoading.value && searchState?.isSuccess.value"
       >
-        <button>
-          <IconLeftArrow />
+        <button @click="clearSearch">
+          <IconArrowLeft />
         </button>
-        Search Results for<span>"{{ searchQuery }}"</span>
-      </p>
+        <p>
+          Search Results for<span>"{{ searchQuery }}"</span>
+        </p>
+      </div>
 
       <div class="hero_search" v-else>
         <span>
@@ -120,11 +130,20 @@ watch(
     width: 100%;
     align-self: flex-start;
     color: $color-text;
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     font-weight: 500;
     display: flex;
     align-items: center;
+    gap: 8px;
     color: $color-alt-text;
+
+    @include mq($screen-mobile) {
+      font-size: 2rem;
+    }
+
+    @include mq($screen-tablet) {
+      font-size: 2.5rem;
+    }
 
     button {
       background-color: transparent;
@@ -133,7 +152,15 @@ watch(
       cursor: pointer;
 
       svg {
-        width: 2rem;
+        width: 1.25rem;
+        transform: scaleX(0.9); // Default scale
+        transition: transform 0.2s ease-in-out; // Smooth transition
+      }
+
+      &:hover {
+        svg {
+          transform: scaleX(1); // Scale up on hover
+        }
       }
     }
 

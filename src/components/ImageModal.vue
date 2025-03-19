@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import IconRightCaret from '@/components/icons/IconRightCaret.vue'
 import type { UnsplashPhoto } from '@/types'
+import { blurHashToDataURL } from '@/utils/blurHash'
 
 const props = defineProps<{
   photos: UnsplashPhoto[]
@@ -14,6 +15,30 @@ const currentIndex = ref(props.initialIndex)
 const isLoaded = ref(false)
 const touchStartX = ref(0)
 const touchEndX = ref(0)
+
+const placeholderImage = computed(() => {
+  const photo = props.photos[currentIndex.value]
+
+  console.log('Photo:', photo.blur_hash) // Debugging
+  if (!photo?.blur_hash) return ''
+
+  const aspectRatio = photo.width / photo.height
+
+  console.log(aspectRatio)
+  const width = 32
+  const height = Math.round(width / aspectRatio)
+
+  console.log(blurHashToDataURL(photo.blur_hash, width, height))
+  return blurHashToDataURL(photo.blur_hash, width, height)
+})
+
+const placeholderAspectRatio = computed(() => {
+  const photo = props.photos[currentIndex.value]
+  if (!photo) return '1 / 1'
+
+  console.log(`${photo.width} / ${photo.height}`)
+  return `${photo.width} / ${photo.height}`
+})
 
 const nextImage = () => {
   if (props.photos.length === 0) return
@@ -76,13 +101,17 @@ onUnmounted(() => {
     </button>
 
     <div class="slider_content">
-      <div class="slider_card">
+      <div
+        class="slider_card"
+        :style="{
+          width: !isLoaded ? '80%' : 'auto',
+        }"
+      >
         <div
           class="slider_placeholder"
           :style="{
-            backgroundColor: photos[currentIndex].color,
-            height: '65vh',
-            width: '400px',
+            backgroundImage: `url(${placeholderImage})`,
+            '--aspect-ratio': placeholderAspectRatio,
           }"
           v-if="!isLoaded"
         ></div>
@@ -114,7 +143,6 @@ onUnmounted(() => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   position: relative;
 
   &_content {
@@ -136,6 +164,16 @@ onUnmounted(() => {
     overflow: hidden;
     background: transparent;
     transition: transform 0.3s ease-in-out;
+  }
+
+  &_placeholder {
+    position: relative;
+    width: 100%;
+    padding-top: calc(100% / (var(--aspect-ratio)));
+    aspect-ratio: var(--aspect-ratio);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
   }
 
   &_image {
@@ -179,12 +217,8 @@ onUnmounted(() => {
     align-items: center;
 
     &.left {
-      left: -20px;
+      left: 0;
       transform: rotate(180deg);
-
-      @include mq($screen-mobile) {
-        left: 0;
-      }
 
       @include mq($screen-tablet) {
         left: 20px;
@@ -192,11 +226,7 @@ onUnmounted(() => {
     }
 
     &.right {
-      right: -20px;
-
-      @include mq($screen-mobile) {
-        right: 0;
-      }
+      right: 0;
 
       @include mq($screen-tablet) {
         right: 20px;
