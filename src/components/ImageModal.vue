@@ -15,6 +15,7 @@ const currentIndex = ref(props.initialIndex)
 const isLoaded = ref(false)
 const touchStartX = ref(0)
 const touchEndX = ref(0)
+const direction = ref<'next' | 'prev'>('next')
 
 const placeholderImage = computed(() => {
   const photo = props.photos[currentIndex.value]
@@ -37,15 +38,16 @@ const placeholderAspectRatio = computed(() => {
 const nextImage = () => {
   if (props.photos.length === 0) return
   isLoaded.value = false
+  direction.value = 'next'
   currentIndex.value = (currentIndex.value + 1) % props.photos.length
 }
 
 const prevImage = () => {
   if (props.photos.length === 0) return
   isLoaded.value = false
+  direction.value = 'prev'
   currentIndex.value = (currentIndex.value - 1 + props.photos.length) % props.photos.length
 }
-
 const closeModal = () => {
   emit('close-modal')
 }
@@ -101,34 +103,36 @@ onUnmounted(() => {
     </button>
 
     <div class="slider_content">
-      <div
-        class="slider_card"
-        :style="{
-          width: !isLoaded ? '80%' : 'auto',
-        }"
-        @click.stop
-      >
+      <transition :name="direction === 'next' ? 'slide-next' : 'slide-prev'" mode="out-in">
         <div
-          class="slider_placeholder"
-          :style="{
-            backgroundImage: `url(${placeholderImage})`,
-            '--aspect-ratio': placeholderAspectRatio,
-          }"
-          v-if="!isLoaded"
-        ></div>
-        <img
-          v-show="isLoaded"
-          :src="photos[currentIndex].optimizedUrl"
-          :alt="photos[currentIndex].alt_description"
-          class="slider_image"
-          @load="isLoaded = true"
-        />
+          :key="currentIndex"
+          class="slider_card"
+          :style="{ width: !isLoaded ? '80%' : 'auto' }"
+          @click.stop
+        >
+          <div
+            class="slider_placeholder"
+            :style="{
+              backgroundImage: `url(${placeholderImage})`,
+              '--aspect-ratio': placeholderAspectRatio,
+            }"
+            v-if="!isLoaded"
+          ></div>
 
-        <div class="slider_caption">
-          <p>{{ photos[currentIndex].user.name }}</p>
-          <p>{{ photos[currentIndex].user.location ?? 'Unknown Location' }}</p>
+          <img
+            v-show="isLoaded"
+            :src="photos[currentIndex].optimizedUrl"
+            :alt="photos[currentIndex].alt_description"
+            class="slider_image"
+            @load="isLoaded = true"
+          />
+
+          <div class="slider_caption">
+            <p>{{ photos[currentIndex].user.name }}</p>
+            <p>{{ photos[currentIndex].user.location ?? 'Unknown Location' }}</p>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
 
     <button @click.stop="nextImage" class="slider_nav right">
@@ -238,6 +242,57 @@ onUnmounted(() => {
       background: rgba(255, 255, 255, 0.8);
       color: black;
     }
+  }
+
+  .slide-next-enter-active,
+  .slide-next-leave-active,
+  .slide-prev-enter-active,
+  .slide-prev-leave-active {
+    transition: all 0.5s ease;
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .slide-next-enter-from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  .slide-next-enter-to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-next-leave-from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-next-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .slide-prev-enter-from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .slide-prev-enter-to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-prev-leave-from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-prev-leave-to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 </style>
