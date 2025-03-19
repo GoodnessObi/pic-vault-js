@@ -3,6 +3,7 @@ import { inject, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import IconSearch from './icons/IconSearch.vue'
 import { SearchStateKey, type SearchState } from '@/types'
+import IconLeftArrow from './icons/IconLeftArrow.vue'
 
 const emit = defineEmits(['update:search'])
 const searchState = inject<SearchState>(SearchStateKey)
@@ -14,21 +15,11 @@ const searchInput = ref(typeof route.query.search === 'string' ? route.query.sea
 
 const searchQuery = computed(() => (route.query.search ? String(route.query.search) : ''))
 
-let timeout: ReturnType<typeof setTimeout>
-
-const handleSearch = () => {
-  clearTimeout(timeout)
-  timeout = setTimeout(() => {
-    updateSearchQuery(searchInput.value.trim())
-  }, 2000)
-}
-
 const updateSearchQuery = (query: string) => {
   emit('update:search', query)
   router.push({ query: query ? { search: query } : {} })
 }
 
-// Sync the input when URL changes
 watch(
   () => route.query.search,
   (newQuery) => {
@@ -40,19 +31,6 @@ watch(
 <template>
   <div class="hero">
     <div class="hero_container">
-      <div class="hero_search">
-        <span>
-          <IconSearch />
-        </span>
-        <input
-          v-model="searchInput"
-          placeholder="Search for photo..."
-          type="search"
-          :disabled="searchState?.isLoading.value"
-          @input="handleSearch"
-          @keyup.enter="updateSearchQuery(searchInput.trim())"
-        />
-      </div>
       <p class="hero_searchState" v-if="!!searchQuery && searchState?.isLoading.value">
         Searching for <span>"{{ searchQuery }}"</span>
       </p>
@@ -61,8 +39,24 @@ watch(
         class="hero_searchState"
         v-else-if="!!searchQuery && !searchState?.isLoading.value && searchState?.isSuccess.value"
       >
-        Search Results for <span>"{{ searchQuery }}"</span>
+        <button>
+          <IconLeftArrow />
+        </button>
+        Search Results for<span>"{{ searchQuery }}"</span>
       </p>
+
+      <div class="hero_search" v-else>
+        <span>
+          <IconSearch />
+        </span>
+        <input
+          v-model="searchInput"
+          placeholder="Search for photo..."
+          type="search"
+          :disabled="searchState?.isLoading.value"
+          @keyup.enter="updateSearchQuery(searchInput.trim())"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -70,7 +64,7 @@ watch(
 <style lang="scss" scoped>
 .hero {
   width: 100%;
-  height: 300px;
+  height: $navbar-height;
   background-color: #dce3eb;
   display: flex;
   flex-direction: column;
@@ -84,33 +78,68 @@ watch(
   &_search {
     width: 100%;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     background-color: white;
     border-radius: 8px;
+    min-height: 60px;
+    height: 100%;
+    overflow: hidden;
+    color: #2d3849;
 
     span {
       padding: 12px;
-      padding-right: 0;
+      padding-left: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+
+      svg {
+        width: 16px;
+      }
     }
 
     input {
       padding: 10px;
       border: none;
       outline: none;
-      color: #2d3849;
-      width: 100%;
+      color: inherit;
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      font-size: 1rem;
+      font-weight: 500;
+
+      &::placeholder {
+        color: inherit;
+        font-weight: 500;
+      }
     }
   }
 
   &_searchState {
     width: 100%;
     align-self: flex-start;
-    color: #2f3153;
-    font-size: 2rem;
-    font-weight: 600;
+    color: $color-text;
+    font-size: 2.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    color: $color-alt-text;
+
+    button {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      svg {
+        width: 2rem;
+      }
+    }
 
     span {
-      color: #6f7487;
+      margin-left: 8px;
+      color: $color-sub-text;
     }
   }
 }

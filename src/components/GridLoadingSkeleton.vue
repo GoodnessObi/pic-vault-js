@@ -1,7 +1,7 @@
 <template>
-  <transition-group name="fade" tag="div" class="boxes-con">
-    <div v-for="index in 6" :key="index" class="boxes">
-      <div class="box-info">
+  <transition-group name="fade" tag="div" class="boxes">
+    <div v-for="index in 6" :key="index" class="boxes-card">
+      <div class="boxes-info">
         <span></span>
         <span></span>
       </div>
@@ -10,65 +10,73 @@
 </template>
 
 <style lang="scss" scoped>
-.boxes-con {
-  position: absolute;
-  width: 80%;
-  max-width: 1000px;
-  margin: 0 auto;
-  top: 250px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  column-gap: 2rem;
-  row-gap: 1.5rem;
-  grid-auto-flow: row dense;
-  padding: 10px;
-  grid-template-rows: masonry;
-}
-
 .boxes {
   width: 100%;
-  height: 100px;
-  padding: 10px;
-  display: flex;
-  grid-row: auto / span 1;
-  background: linear-gradient(100deg, #f6f6f6, #dce3eb, #f6f6f6);
-  background-size: 300% 100%;
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  animation:
-    colorFlow 2s infinite linear,
-    fadeIn 0.5s ease-in-out forwards;
-}
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 3rem;
+  row-gap: 2rem;
+  grid-auto-flow: row dense;
+  grid-template-rows: masonry;
 
-.boxes:nth-child(odd) {
-  grid-row: auto / span 4;
-  height: 400px;
-}
+  @include mq($screen-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.boxes:nth-child(even) {
-  grid-row: auto / span 5;
-  height: 500px;
-}
+  @include mq($screen-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-.box-info {
-  width: 100%;
-  margin-top: auto;
+  &-card {
+    width: 100%;
+    height: 100px;
+    padding: 24px 16px;
+    display: flex;
+    grid-row: auto / span 1;
+    background: linear-gradient(100deg, #f6f6f6, #ccd1d6, #f6f6f6);
+    background-size: 300% 100%;
+    border-radius: 8px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    animation:
+      colorFlow 2s infinite linear,
+      fadeIn 0.5s ease-in-out forwards;
 
-  span {
-    display: block;
-    background-color: #e7e7e7;
-    width: 30%;
-    height: 8px;
-    border-radius: 4px;
+    &:nth-child(1n) {
+      grid-row: auto / span 7;
+      height: 350px;
+    }
 
-    &:first-of-type {
-      width: 50%;
-      margin-bottom: 10px;
+    &:nth-child(2n) {
+      grid-row: auto / span 9;
+      height: 450px;
+    }
+
+    &:nth-child(3n) {
+      grid-row: auto / span 8;
+      height: 400px;
+    }
+  }
+
+  &-info {
+    width: 100%;
+    margin-top: auto;
+
+    span {
+      display: block;
+      background-color: #e7e7e7;
+      width: 30%;
+      height: 16px;
+      border-radius: 4px;
+
+      &:first-of-type {
+        width: 50%;
+        margin-bottom: 10px;
+      }
     }
   }
 }
 
-/* Fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -80,7 +88,6 @@
   }
 }
 
-/* Flowing color animation */
 @keyframes colorFlow {
   0% {
     background-position: 200% 50%;
@@ -90,7 +97,6 @@
   }
 }
 
-/* Vue Transition */
 .fade-enter-active,
 .fade-leave-active {
   transition:

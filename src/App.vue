@@ -9,7 +9,7 @@ import { SearchStateKey } from './types'
 const route = useRoute()
 const router = useRouter()
 
-const DEFAULT_QUERY = 'african' // Define default in one place
+const DEFAULT_QUERY = 'african'
 
 const getSearchQuery = () => {
   const query = route.query.search

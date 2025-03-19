@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+$font-family: 'Inter', sans-serif;
+$navbar-height: 250px;
+
+// screen sizes
+$screen-mobile: 480px;
+$screen-tablet: 768px;
+
+$color-text: #2f3153;
+$color-alt-text: #28334f;
+$color-sub-text: #6f7487;
+$color-grey-200: #e6e6e6;
+$color-grey-100: #f6f6f6;
+$color-success: #1b7232;
+$color-error: #b42318;
+
+@mixin mq($size) {
+  @media screen and (min-width: $size) {
+    @content;
+  }
+}

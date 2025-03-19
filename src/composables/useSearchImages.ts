@@ -1,31 +1,10 @@
 import { ref } from 'vue'
 import { testNetworkSpeed } from '@/services/network'
 import { getOptimizedImageUrl } from '@/utils/imageOptimizer'
+import type { UnsplashPhoto } from '@/types'
 
 const API_BASE_URL = 'https://api.unsplash.com'
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY
-
-export interface UnsplashPhoto {
-  id: string
-  alt_description: string
-  width: number
-  height: number
-  color: string
-  blur_hash: string
-  urls: {
-    raw: string
-    thumb: string
-    small: string
-    regular: string
-    full: string
-    small_s3: string
-  }
-  optimizedUrl: string
-  user: {
-    name: string
-    location: string
-  }
-}
 
 export function useSearchImages() {
   const pictures = ref<UnsplashPhoto[]>([])

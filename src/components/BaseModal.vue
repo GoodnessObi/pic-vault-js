@@ -5,7 +5,9 @@
         <Transition name="modal-inner">
           <div v-if="modalActive" class="modal-content">
             <slot />
-            <button class="modal-close" @click="handleClose">Close</button>
+            <button class="modal-close" @click="handleClose">
+              <IconClose />
+            </button>
           </div>
         </Transition>
       </div>
@@ -15,6 +17,7 @@
 
 <script lang="ts" setup>
 import { watch } from 'vue'
+import IconClose from './icons/IconClose.vue'
 
 const emit = defineEmits(['close-modal'])
 const props = defineProps({
@@ -40,8 +43,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-$primary-color: #1e90ff;
-
 .modal-overlay {
   position: fixed;
   width: 100%;
@@ -52,30 +53,38 @@ $primary-color: #1e90ff;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 2rem;
+  // padding: 0 2rem;
   // cursor: pointer;
 }
 
 .modal-content {
+  position: relative;
   padding: 1rem;
   background: transparent;
   border-radius: 8px;
   max-width: 768px;
-  width: 100%;
+  width: 90%;
   text-align: center;
 }
 
 .modal-close {
-  color: #fff;
-  margin-top: 1rem;
-  background: $primary-color;
-  padding: 0.5rem 1.5rem;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #7c8ea2;
+  background: #ffffff;
   border: none;
+  // padding: 8px 16px;
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Transition Animations */
 .modal-outer-enter-active,
 .modal-outer-leave-active {
   transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
