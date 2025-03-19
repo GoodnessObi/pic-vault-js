@@ -43,5 +43,6 @@ const closeModal = () => {
   max-width: 1000px;
   margin: 0 auto;
   min-height: 50vh;
+  padding-bottom: 5rem;
 }
 </style>

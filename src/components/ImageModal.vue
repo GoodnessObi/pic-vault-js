@@ -185,19 +185,19 @@ onUnmounted(() => {
 
   &_caption {
     width: 100%;
-    padding: 1rem;
-    text-align: center;
+    padding: 24px;
     background: white;
     flex-shrink: 0;
-    font-size: 14px;
-    color: black;
+    font-size: 1rem;
+    color: $color-text;
+    text-align: left;
+    font-weight: 600;
 
     p {
-      font-size: 14px;
-
       &:last-of-type {
-        font-size: 8px;
-        color: #95a4b5;
+        font-size: 12px;
+        color: $color-alt-text;
+        font-weight: 400;
       }
     }
   }

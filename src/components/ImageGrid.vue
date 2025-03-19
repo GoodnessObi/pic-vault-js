@@ -94,6 +94,11 @@ const markImageAsLoaded = (id: string) => {
     &-info {
       margin-top: auto;
       color: white;
+      font-size: 1rem;
+
+      p:last-of-type {
+        font-size: 12px;
+      }
     }
 
     &:hover {

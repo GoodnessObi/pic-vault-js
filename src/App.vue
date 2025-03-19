@@ -13,6 +13,7 @@ const DEFAULT_QUERY = 'african'
 
 const getSearchQuery = () => {
   const query = route.query.search
+
   return typeof query === 'string' && query.trim() ? query : DEFAULT_QUERY
 }
 
@@ -23,35 +24,37 @@ const { pictures, loading, error, searchImages } = useSearchImages()
 const isLoading = loading
 const isSuccess = ref(false)
 
-// Watch for picture updates to set success state
 watch(pictures, () => {
   isSuccess.value = pictures.value.length > 0
 })
 
-// Provide only isLoading and isSuccess
 provide(SearchStateKey, { isLoading, isSuccess })
 
 onMounted(() => {
+  console.log(searchQuery.value)
   searchImages(searchQuery.value)
 })
 
-// Update search when input changes
 watch(
   searchQuery,
   (newQuery) => {
-    const query = newQuery.trim() || DEFAULT_QUERY // Enforce default
+    const query = newQuery.trim() || DEFAULT_QUERY
     searchImages(query)
 
-    router.replace({ query: query !== DEFAULT_QUERY ? { search: query } : {} })
+    if (query !== route.query.search) {
+      router.replace({ query: query !== DEFAULT_QUERY ? { search: query } : {} })
+    }
   },
   { immediate: true },
 )
 
-// Sync search query with URL when history changes
 watch(
   () => route.query.search,
-  () => {
-    searchQuery.value = getSearchQuery()
+  (newQuery) => {
+    const query = typeof newQuery === 'string' && newQuery.trim() ? newQuery : DEFAULT_QUERY
+    if (query !== searchQuery.value) {
+      searchQuery.value = query
+    }
   },
 )
 </script>
@@ -61,9 +64,7 @@ watch(
     <PageHeader @update:search="searchQuery = $event" :isLoading="loading" />
 
     <RouterView v-slot="{ Component }">
-      <!-- <Transition name="page" mode="out-in"> -->
       <component :is="Component" :photos="pictures" :isLoading="loading" />
-      <!-- </Transition> -->
     </RouterView>
   </main>
 </template>
@@ -75,5 +76,6 @@ main {
   flex-direction: column;
   align-items: center;
   padding-bottom: 40px;
+  min-height: 100vh;
 }
 </style>

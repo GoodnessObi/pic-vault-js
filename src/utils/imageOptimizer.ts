@@ -1,8 +1,15 @@
-import type { UnsplashPhoto } from '@/services/api'
+import type { UnsplashPhoto } from '@/types'
 
 export const getOptimizedImageUrl = (photo: UnsplashPhoto, speedMbps: number): string => {
-  if (speedMbps < 0.5) return photo.urls.small
-  if (speedMbps < 2) return photo.urls.regular
-  if (speedMbps < 5) return photo.urls.full
-  return photo.urls.full
+  const screenWidth = window.innerWidth
+
+  if (speedMbps < 1) {
+    return photo.urls.small
+  } else if (speedMbps < 3 && screenWidth < 768) {
+    return photo.urls.regular
+  } else if (speedMbps < 5) {
+    return photo.urls.regular
+  } else {
+    return photo.urls.full
+  }
 }

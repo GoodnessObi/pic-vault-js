@@ -16,14 +16,15 @@ const searchInput = ref(typeof route.query.search === 'string' ? route.query.sea
 const searchQuery = computed(() => (route.query.search ? String(route.query.search) : ''))
 
 const updateSearchQuery = (query: string) => {
-  emit('update:search', query)
-  router.push({ query: query ? { search: query } : {} })
+  if (query !== route.query.search) {
+    emit('update:search', query)
+    router.push({ query: query ? { search: query } : {} })
+  }
 }
 
-// Clear search query and reset input
 const clearSearch = () => {
-  searchInput.value = '' // Clear the input field
-  updateSearchQuery('') // Clear the search query in the route
+  searchInput.value = ''
+  updateSearchQuery('')
 }
 
 watch(

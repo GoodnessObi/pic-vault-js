@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { testNetworkSpeed } from '@/services/network'
+import { getNetworkSpeed } from '@/services/network'
 import { getOptimizedImageUrl } from '@/utils/imageOptimizer'
 import type { UnsplashPhoto } from '@/types'
 
@@ -10,14 +10,13 @@ export function useSearchImages() {
   const pictures = ref<UnsplashPhoto[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const networkSpeed = ref<number>(4)
 
   const searchImages = async (query = 'african', perPage = 8) => {
     loading.value = true
     error.value = null
 
     try {
-      networkSpeed.value = await testNetworkSpeed()
+      const networkSpeed = await getNetworkSpeed()
 
       const response = await fetch(
         `${API_BASE_URL}/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}`,
@@ -36,7 +35,7 @@ export function useSearchImages() {
 
       pictures.value = data.results.map((photo: UnsplashPhoto) => ({
         ...photo,
-        optimizedUrl: getOptimizedImageUrl(photo, networkSpeed.value),
+        optimizedUrl: getOptimizedImageUrl(photo, networkSpeed),
       }))
     } catch (err) {
       error.value = (err as Error).message
