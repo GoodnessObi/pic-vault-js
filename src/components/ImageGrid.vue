@@ -88,14 +88,13 @@ const markImageAsLoaded = (id: string) => {
       left: 0;
       width: 100%;
       height: 100%;
-      // background-color: rgba(0, 0, 0, 0.2);
       padding: 16px;
       display: flex;
       flex-direction: column;
       transition: background 0.3s ease-in-out;
 
       &--light {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(0, 0, 0, 0.2);
       }
     }
 
