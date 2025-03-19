@@ -63,10 +63,16 @@ const handleTouchEnd = () => {
   const threshold = 50
 
   if (Math.abs(diffX) > threshold) {
-    if (diffX > 0)
-      nextImage() // Swipe left
-    else prevImage() // Swipe right
+    if (diffX > 0) {
+      nextImage()
+    } else {
+      prevImage()
+    }
   }
+}
+
+const handleClickOutsideImage = () => {
+  closeModal()
 }
 
 onMounted(() => {
@@ -89,8 +95,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="photos.length" class="slider">
-    <button @click="prevImage" class="slider_nav left">
+  <div v-if="photos.length" class="slider" @click="handleClickOutsideImage">
+    <button @click.stop="prevImage" class="slider_nav left">
       <IconRightCaret />
     </button>
 
@@ -100,6 +106,7 @@ onUnmounted(() => {
         :style="{
           width: !isLoaded ? '80%' : 'auto',
         }"
+        @click.stop
       >
         <div
           class="slider_placeholder"
@@ -124,7 +131,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <button @click="nextImage" class="slider_nav right">
+    <button @click.stop="nextImage" class="slider_nav right">
       <IconRightCaret />
     </button>
   </div>
