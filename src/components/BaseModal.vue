@@ -1,20 +1,3 @@
-<template>
-  <Teleport to="body">
-    <Transition name="modal-outer">
-      <div v-show="modalActive" class="modal-overlay" @click.self="handleClose">
-        <Transition name="modal-inner">
-          <div v-if="modalActive" class="modal-content">
-            <slot />
-            <button class="modal-close" @click="handleClose">
-              <IconClose />
-            </button>
-          </div>
-        </Transition>
-      </div>
-    </Transition>
-  </Teleport>
-</template>
-
 <script lang="ts" setup>
 import { watch } from 'vue'
 import IconClose from './icons/IconClose.vue'
@@ -24,6 +7,7 @@ const props = defineProps({
   modalActive: { type: Boolean, default: false },
   closeOnClickOutside: { type: Boolean, default: true },
   onCloseFn: { type: Function, default: null },
+  showCloseIcon: { type: Boolean, default: false },
 })
 
 const handleClose = () => {
@@ -41,6 +25,23 @@ watch(
   },
 )
 </script>
+
+<template>
+  <Teleport to="body">
+    <Transition name="modal-outer">
+      <div v-show="modalActive" class="modal-overlay" @click.self="handleClose">
+        <Transition name="modal-inner">
+          <div v-if="modalActive" class="modal-content">
+            <slot />
+            <button class="modal-close" @click="handleClose" v-if="showCloseIcon">
+              <IconClose />
+            </button>
+          </div>
+        </Transition>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
 
 <style lang="scss" scoped>
 .modal-overlay {
@@ -64,6 +65,8 @@ watch(
   border-radius: 8px;
   max-width: 768px;
   width: 90%;
+  height: 80vh;
+  max-height: 798px;
   text-align: center;
 }
 

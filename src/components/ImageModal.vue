@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import IconRightCaret from '@/components/icons/IconRightCaret.vue'
 import type { UnsplashPhoto } from '@/types'
 
@@ -11,44 +11,91 @@ const props = defineProps<{
 const emit = defineEmits(['close-modal'])
 
 const currentIndex = ref(props.initialIndex)
+const isLoaded = ref(false)
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+
+// Show placeholder background until image loads
+// const sliderStyle = computed(() => ({
+//   backgroundColor: props.photos[currentIndex.value]?.color || '#ccc',
+// }))
 
 const nextImage = () => {
-  if (currentIndex.value < props.photos.length - 1) {
-    currentIndex.value++
-  } else {
-    currentIndex.value = 0
-  }
+  isLoaded.value = false
+  currentIndex.value = (currentIndex.value + 1) % props.photos.length
 }
 
 const prevImage = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--
-  } else {
-    currentIndex.value = props.photos.length - 1
-  }
+  isLoaded.value = false
+  currentIndex.value = (currentIndex.value - 1 + props.photos.length) % props.photos.length
 }
 
 const closeModal = () => {
   emit('close-modal')
 }
+
+// Swipe handling
+const handleTouchStart = (event: TouchEvent) => {
+  touchStartX.value = event.touches[0].clientX
+}
+
+const handleTouchEnd = (event: TouchEvent) => {
+  touchEndX.value = event.changedTouches[0].clientX
+  const diff = touchStartX.value - touchEndX.value
+  if (diff > 50)
+    nextImage() // Swipe left
+  else if (diff < -50) prevImage() // Swipe right
+}
+
+// Attach event listeners only when modal is open
+watch(
+  () => props.photos.length,
+  (newVal) => {
+    if (newVal > 0) {
+      document.addEventListener('touchstart', handleTouchStart)
+      document.addEventListener('touchend', handleTouchEnd)
+    } else {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  },
+)
+
+onUnmounted(() => {
+  document.removeEventListener('touchstart', handleTouchStart)
+  document.removeEventListener('touchend', handleTouchEnd)
+})
 </script>
 
 <template>
-  <div class="slider">
+  <div v-if="photos.length" class="slider">
     <button @click="prevImage" class="slider_nav left">
       <IconRightCaret />
     </button>
+
     <div class="slider_content">
-      <img
-        :src="photos[currentIndex].urls.small"
-        :alt="photos[currentIndex].alt_description"
-        class="slider_image"
-      />
-      <div class="slider_caption">
-        <p>
-          {{ photos[currentIndex].user.name }}
-        </p>
-        <p>{{ photos[currentIndex].user.location }}</p>
+      <div class="slider_card">
+        <div
+          class="slider_placeholder"
+          :style="{
+            backgroundColor: photos[currentIndex].color,
+            height: '65vh',
+            width: '400px',
+          }"
+          v-if="!isLoaded"
+        ></div>
+        <img
+          v-show="isLoaded"
+          :src="photos[currentIndex].optimizedUrl"
+          :alt="photos[currentIndex].alt_description"
+          class="slider_image"
+          @load="isLoaded = true"
+        />
+
+        <div class="slider_caption">
+          <p>{{ photos[currentIndex].user.name }}</p>
+          <p>{{ photos[currentIndex].user.location ?? 'Unknown Location' }}</p>
+        </div>
       </div>
     </div>
 
@@ -63,31 +110,47 @@ const closeModal = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
   width: 100%;
-  max-height: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 
   &_content {
-    border-radius: 6px;
-    box-shadow:
-      0 4px 10px rgba(0, 0, 0, 0.2),
-      0 8px 24px rgba(0, 0, 0, 0.3);
-    max-width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    height: 100%;
-    overflow: clip;
+    height: 80vh;
+  }
+
+  &_card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    max-width: 80%;
+    max-height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background: transparent;
+    transition: transform 0.4s ease-in-out;
   }
 
   &_image {
+    width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
     display: block;
   }
 
   &_caption {
-    background-color: #fff;
-    color: black;
-    display: block;
-    text-align: left;
+    width: 100%;
     padding: 1rem;
+    text-align: center;
+    background: white;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: black;
 
     p {
       font-size: 14px;
