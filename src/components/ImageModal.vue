@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import IconRightCaret from '@/components/icons/IconRightCaret.vue'
 import type { UnsplashPhoto } from '@/types'
 
@@ -15,17 +15,14 @@ const isLoaded = ref(false)
 const touchStartX = ref(0)
 const touchEndX = ref(0)
 
-// Show placeholder background until image loads
-// const sliderStyle = computed(() => ({
-//   backgroundColor: props.photos[currentIndex.value]?.color || '#ccc',
-// }))
-
 const nextImage = () => {
+  if (props.photos.length === 0) return
   isLoaded.value = false
   currentIndex.value = (currentIndex.value + 1) % props.photos.length
 }
 
 const prevImage = () => {
+  if (props.photos.length === 0) return
   isLoaded.value = false
   currentIndex.value = (currentIndex.value - 1 + props.photos.length) % props.photos.length
 }
@@ -34,36 +31,41 @@ const closeModal = () => {
   emit('close-modal')
 }
 
-// Swipe handling
 const handleTouchStart = (event: TouchEvent) => {
   touchStartX.value = event.touches[0].clientX
 }
 
-const handleTouchEnd = (event: TouchEvent) => {
-  touchEndX.value = event.changedTouches[0].clientX
-  const diff = touchStartX.value - touchEndX.value
-  if (diff > 50)
-    nextImage() // Swipe left
-  else if (diff < -50) prevImage() // Swipe right
+const handleTouchMove = (event: TouchEvent) => {
+  touchEndX.value = event.touches[0].clientX
 }
 
-// Attach event listeners only when modal is open
-watch(
-  () => props.photos.length,
-  (newVal) => {
-    if (newVal > 0) {
-      document.addEventListener('touchstart', handleTouchStart)
-      document.addEventListener('touchend', handleTouchEnd)
-    } else {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchend', handleTouchEnd)
-    }
-  },
-)
+const handleTouchEnd = () => {
+  const diffX = touchStartX.value - touchEndX.value
+  const threshold = 50
+
+  if (Math.abs(diffX) > threshold) {
+    if (diffX > 0)
+      nextImage() // Swipe left
+    else prevImage() // Swipe right
+  }
+}
+
+onMounted(() => {
+  const sliderContent = document.querySelector('.slider_content') as HTMLElement | null
+  if (sliderContent) {
+    sliderContent.addEventListener('touchstart', handleTouchStart, { passive: true })
+    sliderContent.addEventListener('touchmove', handleTouchMove, { passive: true })
+    sliderContent.addEventListener('touchend', handleTouchEnd)
+  }
+})
 
 onUnmounted(() => {
-  document.removeEventListener('touchstart', handleTouchStart)
-  document.removeEventListener('touchend', handleTouchEnd)
+  const sliderContent = document.querySelector('.slider_content') as HTMLElement | null
+  if (sliderContent) {
+    sliderContent.removeEventListener('touchstart', handleTouchStart)
+    sliderContent.removeEventListener('touchmove', handleTouchMove)
+    sliderContent.removeEventListener('touchend', handleTouchEnd)
+  }
 })
 </script>
 
@@ -133,7 +135,7 @@ onUnmounted(() => {
     border-radius: 8px;
     overflow: hidden;
     background: transparent;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.3s ease-in-out;
   }
 
   &_image {
