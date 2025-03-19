@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { UnsplashPhoto } from '@/types'
+import { isLightColor } from '@/utils/isLightColor'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{ photos: UnsplashPhoto[]; openModal: (index: number) => void }>()
@@ -29,7 +30,10 @@ const markImageAsLoaded = (id: string) => {
         :class="{ hidden: !loadedImages[photo.id] }"
         @load="markImageAsLoaded(photo.id)"
       />
-      <div class="grid_card-overlay">
+      <div
+        class="grid_card-overlay"
+        :class="{ 'grid_card-overlay--light': isLightColor(photo.color) }"
+      >
         <div class="grid_card-info">
           <p>{{ photo.user.name }}</p>
           <p>{{ photo.user.location || 'Unknown location' }}</p>
@@ -84,11 +88,15 @@ const markImageAsLoaded = (id: string) => {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.2);
+      // background-color: rgba(0, 0, 0, 0.2);
       padding: 16px;
       display: flex;
       flex-direction: column;
       transition: background 0.3s ease-in-out;
+
+      &--light {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
     }
 
     &-info {
