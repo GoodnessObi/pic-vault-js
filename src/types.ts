@@ -25,6 +25,7 @@ export interface UnsplashPhoto {
 export interface SearchState {
   isLoading: Ref<boolean>
   isSuccess: Ref<boolean>
+  isError: Ref<boolean>
 }
 
 export const SearchStateKey: InjectionKey<SearchState> = Symbol('SearchState')

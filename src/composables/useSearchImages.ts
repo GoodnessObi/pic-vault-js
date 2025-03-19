@@ -9,11 +9,11 @@ const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY
 export function useSearchImages() {
   const pictures = ref<UnsplashPhoto[]>([])
   const loading = ref(false)
-  const error = ref<string | null>(null)
+  const isError = ref(false)
 
   const searchImages = async (query = 'african', perPage = 8) => {
     loading.value = true
-    error.value = null
+    isError.value = false
 
     try {
       const networkSpeed = await getNetworkSpeed()
@@ -38,7 +38,8 @@ export function useSearchImages() {
         optimizedUrl: getOptimizedImageUrl(photo, networkSpeed),
       }))
     } catch (err) {
-      error.value = (err as Error).message
+      console.error(err)
+      isError.value = true
     } finally {
       loading.value = false
     }
@@ -47,7 +48,7 @@ export function useSearchImages() {
   return {
     pictures,
     loading,
-    error,
+    isError,
     searchImages,
   }
 }

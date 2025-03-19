@@ -19,7 +19,7 @@ const getSearchQuery = () => {
 
 const searchQuery = ref(getSearchQuery())
 
-const { pictures, loading, error, searchImages } = useSearchImages()
+const { pictures, loading, isError, searchImages } = useSearchImages()
 
 const isLoading = loading
 const isSuccess = ref(false)
@@ -28,7 +28,7 @@ watch(pictures, () => {
   isSuccess.value = pictures.value.length > 0
 })
 
-provide(SearchStateKey, { isLoading, isSuccess })
+provide(SearchStateKey, { isLoading, isSuccess, isError })
 
 onMounted(() => {
   searchImages(searchQuery.value)

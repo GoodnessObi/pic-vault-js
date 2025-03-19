@@ -68,6 +68,9 @@ watch(
           @keyup.enter="updateSearchQuery(searchInput.trim())"
         />
       </div>
+      <p v-if="searchState?.isError.value" class="error-message">
+        There was an error fetching your images. Please try again.
+      </p>
     </div>
   </div>
 </template>
@@ -169,6 +172,13 @@ watch(
       margin-left: 8px;
       color: $color-sub-text;
     }
+  }
+
+  .error-message {
+    color: $color-error;
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 600;
   }
 }
 </style>
